@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GerbangAkun — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f0f4ff;--bg2:#e4ecff;--surface:#fff;--surface2:#f5f8ff;
+  --border:#d0dcf5;--border2:#a8c0ee;
+  --accent:#1d4ed8;--accent2:#2563eb;--accent-h:#1e40af;--accent-l:rgba(29,78,216,.1);--accent-g:rgba(29,78,216,.18);
+  --text:#0f172a;--text2:#334155;--muted:#64748b;--muted2:#94a3b8;
+  --danger:#ef4444;--danger-l:rgba(239,68,68,.1);
+  --warn:#f59e0b;--warn-l:rgba(245,158,11,.1);
+  --ok:#22c55e;--ok-l:rgba(34,197,94,.1);
+  --sh:0 2px 16px rgba(29,78,216,.07);--sh-md:0 8px 32px rgba(29,78,216,.12);--sh-lg:0 24px 64px rgba(29,78,216,.16);
+  --ff:'Plus Jakarta Sans',sans-serif;--fm:'DM Mono',monospace;
+  --r:14px;--tr:.2s cubic-bezier(.4,0,.2,1);
+  --sw:240px;
+}
+[data-theme=dark]{
+  --bg:#060b18;--bg2:#0a1120;--surface:#0e1628;--surface2:#131e34;
+  --border:#1a2840;--border2:#243858;
+  --accent:#3b82f6;--accent2:#60a5fa;--accent-h:#2563eb;--accent-l:rgba(59,130,246,.12);--accent-g:rgba(59,130,246,.22);
+  --text:#e4eeff;--text2:#a8bfd8;--muted:#5a7090;--muted2:#3d5070;
+  --danger:#f87171;--danger-l:rgba(248,113,113,.12);
+  --warn:#fbbf24;--warn-l:rgba(251,191,36,.1);
+  --ok:#4ade80;--ok-l:rgba(74,222,128,.1);
+  --sh:0 2px 16px rgba(0,0,0,.5);--sh-md:0 8px 32px rgba(0,0,0,.6);--sh-lg:0 24px 80px rgba(0,0,0,.7);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:background var(--tr),color var(--tr);-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:44px 44px;opacity:.28;pointer-events:none;z-index:0}
+
+.screen{display:none;min-height:100vh;position:relative;z-index:1}
+.screen.active{display:flex}
+
+/* LOGIN */
+#loginScreen{align-items:center;justify-content:center;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(29,78,216,.12) 0%,transparent 65%)}
+.login-wrap{width:100%;max-width:400px;padding:0 16px;animation:fadeUp .5s ease}
+.login-head{text-align:center;margin-bottom:24px}
+.admin-pill{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,var(--accent),#1e40af);color:#fff;padding:5px 13px;border-radius:20px;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;box-shadow:0 4px 14px var(--accent-g)}
+.login-head h1{font-size:1.6rem;font-weight:800;color:var(--text);letter-spacing:-.5px}
+.login-head p{color:var(--muted);font-size:.82rem;margin-top:4px}
+.card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:24px;box-shadow:var(--sh-lg)}
+.cred-hint{background:rgba(29,78,216,.07);border:1px solid var(--border2);border-radius:8px;padding:9px 13px;font-size:.77rem;color:var(--muted);margin-bottom:14px;font-family:var(--fm);line-height:1.6}
+.cred-hint b{color:var(--accent2)}
+.cred-hint strong{color:var(--accent2);display:block;margin-bottom:3px;font-size:.69rem;letter-spacing:.06em;text-transform:uppercase;font-family:var(--ff);font-weight:700}
+.form-group{margin-bottom:15px}
+.form-label{display:block;font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:6px;letter-spacing:.08em;text-transform:uppercase}
+.form-input{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:11px 13px;color:var(--text);font-family:var(--ff);font-size:.91rem;font-weight:500;transition:all var(--tr);outline:none}
+.form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-l);background:var(--surface)}
+.form-input::placeholder{color:var(--muted2);font-weight:400}
+.form-select{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:11px 13px;color:var(--text);font-family:var(--ff);font-size:.91rem;outline:none;transition:all var(--tr);appearance:none;cursor:pointer}
+.form-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-l)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 18px;border-radius:9px;font-family:var(--ff);font-size:.91rem;font-weight:700;cursor:pointer;transition:all var(--tr);border:none;line-height:1}
+.btn-primary{background:var(--accent);color:#fff;width:100%;box-shadow:0 4px 14px var(--accent-g)}
+.btn-primary:hover{background:var(--accent-h);transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-ghost{background:transparent;color:var(--muted);border:1.5px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-warn{background:var(--warn);color:#000}
+.btn-sm{padding:6px 11px;font-size:.77rem;border-radius:7px}
+.error-box{background:var(--danger-l);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:9px 13px;font-size:.81rem;color:var(--danger);margin-bottom:13px;display:none;font-weight:500}
+
+/* ADMIN LAYOUT */
+#adminScreen{flex-direction:row}
+
+/* SIDEBAR */
+.sidebar{width:var(--sw);background:var(--surface);border-right:1.5px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;z-index:50;box-shadow:var(--sh);transition:transform var(--tr),background var(--tr)}
+.sidebar-head{padding:18px 16px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:10px}
+.sb-logo{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),#1e40af);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px var(--accent-g)}
+.sb-title{font-weight:800;font-size:.88rem;color:var(--text);letter-spacing:-.2px}
+.sb-sub{font-size:.66rem;color:var(--muted);font-weight:500}
+.sb-nav{flex:1;padding:14px 10px;overflow-y:auto}
+.nav-label{font-size:.63rem;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.1em;padding:0 8px;margin-bottom:5px;margin-top:14px}
+.nav-label:first-child{margin-top:0}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;font-size:.83rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all var(--tr);margin-bottom:2px;border:none;background:transparent;width:100%;text-align:left;font-family:var(--ff)}
+.nav-item:hover{background:var(--bg2);color:var(--text)}
+.nav-item.active{background:var(--accent-l);color:var(--accent2);border:1px solid rgba(37,99,235,.18)}
+.nav-icon{width:17px;height:17px;flex-shrink:0;opacity:.75}
+.nav-item.active .nav-icon{opacity:1}
+.nav-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:.63rem;font-weight:700;padding:2px 7px;border-radius:20px;font-family:var(--fm)}
+.sb-footer{padding:12px 10px;border-top:1.5px solid var(--border);display:flex;flex-direction:column;gap:7px}
+.admin-card{display:flex;align-items:center;gap:9px;padding:9px 10px;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px}
+.admin-av{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#1e40af);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.77rem;flex-shrink:0}
+.admin-name{font-size:.79rem;font-weight:700;color:var(--text)}
+.admin-role{font-size:.63rem;color:var(--accent2);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+
+/* TOPBAR */
+.topbar{background:rgba(255,255,255,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1.5px solid var(--border);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:40;box-shadow:var(--sh);transition:background var(--tr)}
+[data-theme=dark] .topbar{background:rgba(14,22,40,.92)}
+.topbar-title{font-size:.93rem;font-weight:800;color:var(--text)}
+.topbar-sub{font-size:.76rem;color:var(--muted);margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.theme-toggle{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--tr);font-size:.92rem;color:var(--muted)}
+.theme-toggle:hover{border-color:var(--accent);color:var(--accent)}
+
+/* HAMBURGER (mobile) */
+.hamburger{display:none;width:36px;height:36px;border-radius:9px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;align-items:center;justify-content:center;flex-direction:column;gap:4px;padding:8px;transition:all var(--tr)}
+.hamburger span{display:block;width:100%;height:2px;background:var(--text);border-radius:1px;transition:all var(--tr)}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:45;backdrop-filter:blur(2px)}
+.sidebar-overlay.open{display:block}
+
+/* MAIN */
+.admin-main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.admin-content{flex:1;padding:20px 16px}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:12px;margin-bottom:20px}
+.stat-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:16px 18px;display:flex;align-items:center;gap:13px;box-shadow:var(--sh);transition:all var(--tr);animation:fadeUp .4s ease both}
+.stat-card:hover{box-shadow:var(--sh-md);transform:translateY(-2px)}
+.stat-icon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0}
+.si-blue{background:var(--accent-l)}.si-green{background:var(--ok-l)}.si-yellow{background:var(--warn-l)}.si-red{background:var(--danger-l)}
+.stat-num{font-size:1.5rem;font-weight:800;color:var(--text);font-family:var(--fm);line-height:1}
+.stat-lbl{font-size:.75rem;color:var(--muted);font-weight:500;margin-top:2px}
+
+/* PANELS */
+.panel{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:18px;animation:fadeUp .4s ease both}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1.5px solid var(--border);flex-wrap:wrap;gap:9px}
+.panel-title{font-size:.86rem;font-weight:800;color:var(--text)}
+.panel-sub{font-size:.73rem;color:var(--muted);margin-top:2px}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;overflow-x:auto}
+.tbl-wrap{overflow-x:auto}
+.tbl th{text-align:left;padding:10px 15px;font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;border-bottom:1.5px solid var(--border);background:var(--bg);white-space:nowrap}
+.tbl td{padding:11px 15px;font-size:.82rem;border-bottom:1px solid var(--border);color:var(--text2);transition:background var(--tr)}
+.tbl tr:hover td{background:var(--bg2)}
+.tbl tr:last-child td{border-bottom:none}
+.mono{font-family:var(--fm);font-size:.77rem;color:var(--text)}
+
+/* BADGES */
+.status-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.s-ok{background:var(--ok-l);color:var(--ok);border:1px solid rgba(34,197,94,.25)}
+.s-off{background:var(--danger-l);color:var(--danger);border:1px solid rgba(239,68,68,.25)}
+.sys-badge{display:inline-flex;padding:2px 8px;border-radius:5px;font-size:.65rem;font-weight:700;font-family:var(--fm)}
+.sys-sakti{background:rgba(37,99,235,.1);color:#2563eb;border:1px solid rgba(37,99,235,.2)}
+.sys-siasn{background:rgba(245,158,11,.1);color:#d97706;border:1px solid rgba(245,158,11,.2)}
+.sys-ekinerja{background:rgba(139,92,246,.1);color:#7c3aed;border:1px solid rgba(139,92,246,.2)}
+[data-theme=dark] .sys-sakti{color:#60a5fa}[data-theme=dark] .sys-siasn{color:#fbbf24}[data-theme=dark] .sys-ekinerja{color:#c4b5fd}
+.act-btns{display:flex;gap:5px;flex-wrap:wrap}
+
+/* LOG */
+.log-item{display:flex;align-items:flex-start;gap:11px;padding:11px 18px;border-bottom:1px solid var(--border);transition:background var(--tr)}
+.log-item:last-child{border-bottom:none}
+.log-item:hover{background:var(--bg2)}
+.log-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.ld-green{background:var(--ok)}.ld-blue{background:var(--accent)}.ld-yellow{background:var(--warn)}.ld-red{background:var(--danger)}
+.log-msg{font-size:.81rem;color:var(--text2);font-weight:500}
+.log-time{font-size:.7rem;color:var(--muted);font-family:var(--fm);margin-top:2px}
+
+/* SEARCH */
+.search-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.search-input{background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:7px 13px;color:var(--text);font-family:var(--ff);font-size:.83rem;font-weight:500;outline:none;transition:all var(--tr);width:200px}
+.search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-l)}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:22px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto;animation:fadeUp .22s ease;box-shadow:var(--sh-lg)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.modal-title{font-size:.9rem;font-weight:800;color:var(--text)}
+.modal-close{width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:transparent;border:1.5px solid var(--border);border-radius:7px;color:var(--muted);cursor:pointer;transition:all var(--tr);font-size:.85rem}
+.modal-close:hover{color:var(--danger);border-color:var(--danger)}
+.modal-actions{display:flex;gap:8px;margin-top:18px}
+.modal-actions .btn{flex:1}
+
+/* TOAST */
+.toast-container{position:fixed;bottom:20px;right:16px;z-index:300;display:flex;flex-direction:column;gap:7px;max-width:calc(100vw - 32px)}
+.toast{background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:10px 14px;font-size:.81rem;display:flex;align-items:center;gap:9px;animation:slideIn .3s ease;box-shadow:var(--sh-md);font-weight:500;color:var(--text)}
+.toast.success{border-color:rgba(34,197,94,.4)}.toast.error{border-color:rgba(239,68,68,.4)}
+
+/* PAGES */
+.page{display:none}.page.active{display:block;animation:fadeUp .3s ease}
+
+/* DASHBOARD GRID */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .dash-grid{grid-template-columns:1fr}
+  .search-input{width:140px}
+}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .admin-main{margin-left:0}
+  .hamburger{display:flex}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .tbl th,.tbl td{padding:9px 11px}
+}
+@media(max-width:480px){
+  .stats-row{grid-template-columns:1fr 1fr}
+  .stat-card{padding:13px}
+  .stat-num{font-size:1.3rem}
+  .admin-content{padding:14px 12px}
+  .panel-head{flex-direction:column;align-items:flex-start}
+  .search-row{width:100%}
+  .search-input{width:100%;flex:1}
+  .modal{padding:16px}
+}
+@media(max-width:380px){
+  .stats-row{grid-template-columns:1fr 1fr}
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen" class="screen active">
+  <div class="login-wrap">
+    <div class="login-head">
+      <div class="admin-pill">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Admin Panel
+      </div>
+      <h1>GerbangAkun</h1>
+      <p>Halaman khusus administrator sistem</p>
+    </div>
+    <div class="card">
+      <div class="cred-hint">
+        <strong>🔐 Admin Credentials</strong>
+        Username: <b>Rovostarboy</b> &nbsp;·&nbsp; Password: <b>duatigamakansate</b>
+      </div>
+      <div id="loginError" class="error-box"></div>
+      <div class="form-group"><label class="form-label">Username Admin</label><input type="text" id="adminUser" class="form-input" placeholder="Username" autocomplete="username"></div>
+      <div class="form-group"><label class="form-label">Password</label><input type="password" id="adminPass" class="form-input" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="btn btn-primary" id="loginBtn" onclick="handleLogin()">Masuk sebagai Admin</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="adminScreen" class="screen">
+
+  <!-- Sidebar overlay (mobile) -->
+  <div class="sidebar-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <div class="sb-logo"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+      <div><div class="sb-title">GerbangAkun</div><div class="sb-sub">Admin Panel</div></div>
+    </div>
+    <nav class="sb-nav">
+      <div class="nav-label">Menu Utama</div>
+      <button class="nav-item active" onclick="navTo('dashboard',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-item" onclick="navTo('users',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Pengguna
+        <span class="nav-badge" id="uBadge">0</span>
+      </button>
+      <button class="nav-item" onclick="navTo('accounts',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="2" width="18" height="20" rx="2"/><path d="M9 2v20M3 12h6"/></svg>
+        Akun Tersimpan
+        <span class="nav-badge" id="aBadge">0</span>
+      </button>
+      <div class="nav-label">Monitoring</div>
+      <button class="nav-item" onclick="navTo('activity',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Log Aktivitas
+      </button>
+      <button class="nav-item" onclick="navTo('settings',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M5.34 18.66l-1.41-1.41M19.07 19.07l-1.41-1.41M5.34 5.34L3.93 6.75M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>
+        Pengaturan
+      </button>
+    </nav>
+    <div class="sb-footer">
+      <div class="admin-card">
+        <div class="admin-av">R</div>
+        <div><div class="admin-name">Rovostarboy</div><div class="admin-role">Super Admin</div></div>
+      </div>
+      <button class="btn btn-ghost" style="width:100%;font-size:.8rem;padding:7px;" onclick="handleLogout()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Keluar
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="admin-main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="hamburger" onclick="openSidebar()" id="hamburger">
+          <span></span><span></span><span></span>
+        </button>
+        <div>
+          <div class="topbar-title" id="topTitle">Dashboard</div>
+          <div class="topbar-sub">Selamat datang, Rovostarboy</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+        <button class="btn btn-ghost btn-sm" onclick="refreshData()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+          Refresh
+        </button>
+      </div>
+    </div>
+
+    <div class="admin-content">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="stats-row">
+          <div class="stat-card" style="animation-delay:0s"><div class="stat-icon si-blue">👥</div><div><div class="stat-num" id="stUsers">3</div><div class="stat-lbl">Total Pengguna</div></div></div>
+          <div class="stat-card" style="animation-delay:.05s"><div class="stat-icon si-green">🔑</div><div><div class="stat-num" id="stAccs">7</div><div class="stat-lbl">Akun Tersimpan</div></div></div>
+          <div class="stat-card" style="animation-delay:.1s"><div class="stat-icon si-yellow">⚡</div><div><div class="stat-num" id="stLogins">24</div><div class="stat-lbl">Login Hari Ini</div></div></div>
+          <div class="stat-card" style="animation-delay:.15s"><div class="stat-icon si-red">⚠️</div><div><div class="stat-num" id="stFailed">2</div><div class="stat-lbl">Login Gagal</div></div></div>
+        </div>
+        <div class="dash-grid">
+          <div class="panel">
+            <div class="panel-head"><div><div class="panel-title">Log Aktivitas Terbaru</div><div class="panel-sub">Real-time event stream</div></div></div>
+            <div id="dashLog"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div><div class="panel-title">Pengguna Aktif</div><div class="panel-sub">Daftar pengguna terdaftar</div></div><button class="btn btn-primary btn-sm" onclick="openAddUser()">+ Tambah</button></div>
+            <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Nama</th><th>Status</th><th>Akun</th></tr></thead><tbody id="dashUsers"></tbody></table></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div class="page" id="page-users">
+        <div class="panel">
+          <div class="panel-head">
+            <div><div class="panel-title">Manajemen Pengguna</div><div class="panel-sub">Kelola semua pengguna sistem</div></div>
+            <div class="search-row">
+              <input type="text" class="search-input" id="uSearch" placeholder="Cari pengguna..." oninput="filterUsers()">
+              <button class="btn btn-primary btn-sm" onclick="openAddUser()">+ Tambah</button>
+            </div>
+          </div>
+          <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Pengguna</th><th>Email</th><th>Status</th><th>Akun</th><th>Terdaftar</th><th>Aksi</th></tr></thead><tbody id="userTbl"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- ACCOUNTS -->
+      <div class="page" id="page-accounts">
+        <div class="panel">
+          <div class="panel-head">
+            <div><div class="panel-title">Semua Akun Tersimpan</div><div class="panel-sub">Seluruh credential yang disimpan pengguna</div></div>
+            <div class="search-row">
+              <input type="text" class="search-input" id="aSearch" placeholder="Cari akun..." oninput="filterAccounts()">
+              <select class="search-input" id="sysFilter" style="width:auto" onchange="filterAccounts()"><option value="">Semua Sistem</option><option value="sakti">SAKTI</option><option value="siasn">SIASN</option><option value="ekinerja">e-Kinerja</option></select>
+            </div>
+          </div>
+          <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Nama Akun</th><th>Sistem</th><th>Username</th><th>Pemilik</th><th>TOTP</th><th>Aksi</th></tr></thead><tbody id="accTbl"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- ACTIVITY -->
+      <div class="page" id="page-activity">
+        <div class="panel">
+          <div class="panel-head"><div><div class="panel-title">Log Aktivitas Lengkap</div><div class="panel-sub">Semua event sistem dalam 24 jam terakhir</div></div><button class="btn btn-ghost btn-sm" onclick="clearLogs()">🗑️ Clear</button></div>
+          <div id="fullLog"></div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="page" id="page-settings">
+        <div style="max-width:560px">
+          <div class="panel" style="margin-bottom:16px">
+            <div class="panel-head"><div class="panel-title">Supabase Config</div></div>
+            <div style="padding:18px">
+              <div class="form-group"><label class="form-label">Supabase URL</label><input type="text" class="form-input" id="cfgUrl" placeholder="https://xxxxxxxx.supabase.co"></div>
+              <div class="form-group"><label class="form-label">Supabase Anon Key</label><input type="password" class="form-input" id="cfgKey" placeholder="eyJhbGciOiJ..."></div>
+              <button class="btn btn-primary" style="width:auto;padding:9px 18px" onclick="saveConfig()">Simpan Config</button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title">Admin Password</div></div>
+            <div style="padding:18px">
+              <div class="form-group"><label class="form-label">Password Baru</label><input type="password" class="form-input" id="newPass" placeholder="Password baru..."></div>
+              <div class="form-group"><label class="form-label">Konfirmasi</label><input type="password" class="form-input" id="confPass" placeholder="Ulangi password..."></div>
+              <button class="btn btn-warn" style="width:auto;padding:9px 18px;color:#000" onclick="changePass()">Ganti Password</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ADD USER -->
+<div class="modal-overlay" id="addUserModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">+ Tambah Pengguna</div><button class="modal-close" onclick="closeModal('addUserModal')">✕</button></div>
+    <div class="form-group"><label class="form-label">Nama</label><input type="text" id="nuName" class="form-input" placeholder="Nama lengkap"></div>
+    <div class="form-group"><label class="form-label">Email</label><input type="email" id="nuEmail" class="form-input" placeholder="email@instansi.go.id"></div>
+    <div class="form-group"><label class="form-label">Status</label><select id="nuStatus" class="form-select"><option value="active">Aktif</option><option value="inactive">Non-aktif</option></select></div>
+    <div id="nuErr" class="error-box"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('addUserModal')">Batal</button><button class="btn btn-primary" onclick="addUser()">Simpan</button></div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastBox"></div>
+
+<script>
+var ADMIN = { username:'Rovostarboy', password:'duatigamakansate' };
+
+var users = [
+  { id:'1', name:'Budi Santoso', email:'budi@kemenkeu.go.id', status:'active', accounts:3, joined:'2024-11-10' },
+  { id:'2', name:'Siti Rahayu', email:'siti@bkn.go.id', status:'active', accounts:2, joined:'2024-12-03' },
+  { id:'3', name:'Andi Pratama', email:'andi@ekinerja.go.id', status:'inactive', accounts:2, joined:'2025-01-15' }
+];
+
+var allAccs = [
+  { id:'1', name:'SAKTI - Bendahara Umum', system:'sakti', username:'199001012015011001', owner:'Budi Santoso', totp:true },
+  { id:'2', name:'SIASN - Budi', system:'siasn', username:'199001012015011001', owner:'Budi Santoso', totp:false },
+  { id:'3', name:'e-Kinerja - Budi', system:'ekinerja', username:'199001012015011001', owner:'Budi Santoso', totp:true },
+  { id:'4', name:'SIASN - Siti', system:'siasn', username:'199002022016012002', owner:'Siti Rahayu', totp:false },
+  { id:'5', name:'e-Kinerja - Siti', system:'ekinerja', username:'199002022016012002', owner:'Siti Rahayu', totp:true },
+  { id:'6', name:'SAKTI - Andi', system:'sakti', username:'199503032018011003', owner:'Andi Pratama', totp:false },
+  { id:'7', name:'SIASN - Andi', system:'siasn', username:'199503032018011003', owner:'Andi Pratama', totp:false }
+];
+
+var logs = [
+  { type:'green', msg:'Budi Santoso berhasil login', time:fmtTime(-2) },
+  { type:'blue', msg:'Akun "SAKTI - Bendahara Umum" dibuka oleh Budi', time:fmtTime(-5) },
+  { type:'yellow', msg:'Siti Rahayu memperbarui credential SIASN', time:fmtTime(-18) },
+  { type:'red', msg:'Percobaan login gagal — IP 103.x.x.x', time:fmtTime(-34) },
+  { type:'green', msg:'Siti Rahayu berhasil login', time:fmtTime(-55) },
+  { type:'blue', msg:'Andi Pratama menambah akun baru: SAKTI', time:fmtTime(-90) },
+  { type:'red', msg:'Percobaan login gagal — username tidak ditemukan', time:fmtTime(-120) }
+];
+
+function fmtTime(off) {
+  var d = new Date(Date.now() + off*60000);
+  return d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}) + ' · ' + d.toLocaleDateString('id-ID');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var t = localStorage.getItem('adm_theme') || 'light';
+  applyTheme(t);
+  if (sessionStorage.getItem('adm_sess')) showAdmin();
+});
+
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('adm_theme', t);
+  var btn = document.getElementById('themeBtn');
+  if (btn) btn.textContent = t === 'dark' ? '☀️' : '🌙';
+}
+function toggleTheme() {
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+
+// SIDEBAR MOBILE
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sbOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sbOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleLogin() {
+  var u = document.getElementById('adminUser').value.trim();
+  var p = document.getElementById('adminPass').value;
+  var btn = document.getElementById('loginBtn');
+  var err = document.getElementById('loginError');
+  err.style.display = 'none';
+  if (!u || !p) { showErr(err,'Username dan password wajib diisi.'); return; }
+  btn.disabled = true; btn.textContent = 'Memverifikasi...';
+  setTimeout(function() {
+    if (u !== ADMIN.username || p !== ADMIN.password) {
+      btn.disabled = false; btn.textContent = 'Masuk sebagai Admin';
+      showErr(err,'Username atau password salah.');
+      logs.unshift({ type:'red', msg:'Login admin gagal — username: "'+u+'"', time:fmtTime(0) });
+      return;
+    }
+    btn.disabled = false; btn.textContent = 'Masuk sebagai Admin';
+    sessionStorage.setItem('adm_sess','1');
+    showAdmin();
+  }, 700);
+}
+
+function handleLogout() {
+  sessionStorage.removeItem('adm_sess');
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById('loginScreen').classList.add('active');
+  document.getElementById('adminUser').value = '';
+  document.getElementById('adminPass').value = '';
+  document.getElementById('loginError').style.display = 'none';
+}
+
+function showAdmin() {
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById('adminScreen').classList.add('active');
+  loadAll();
+}
+
+function loadAll() {
+  document.getElementById('uBadge').textContent = users.length;
+  document.getElementById('aBadge').textContent = allAccs.length;
+  document.getElementById('stUsers').textContent = users.length;
+  document.getElementById('stAccs').textContent = allAccs.length;
+  renderDashLog(); renderDashUsers(); renderUserTbl(); renderAccTbl(); renderFullLog();
+}
+function refreshData() { loadAll(); toast('success','🔄 Data diperbarui.'); }
+
+function navTo(page, btn) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+  document.getElementById('page-'+page).classList.add('active');
+  btn.classList.add('active');
+  var titles = { dashboard:'Dashboard', users:'Manajemen Pengguna', accounts:'Akun Tersimpan', activity:'Log Aktivitas', settings:'Pengaturan' };
+  document.getElementById('topTitle').textContent = titles[page] || page;
+  closeSidebar();
+}
+
+function renderDashLog() {
+  document.getElementById('dashLog').innerHTML = logs.slice(0,5).map(function(l){
+    return '<div class="log-item"><div class="log-dot ld-'+l.type+'"></div><div><div class="log-msg">'+l.msg+'</div><div class="log-time">'+l.time+'</div></div></div>';
+  }).join('');
+}
+
+function renderDashUsers() {
+  document.getElementById('dashUsers').innerHTML = users.map(function(u){
+    return '<tr><td><strong style="color:var(--text)">'+u.name+'</strong><br><span style="font-size:.71rem;color:var(--muted)">'+u.email+'</span></td>' +
+      '<td><span class="status-badge '+(u.status==='active'?'s-ok':'s-off')+'">'+(u.status==='active'?'● Aktif':'● Non-aktif')+'</span></td>' +
+      '<td class="mono">'+u.accounts+'</td></tr>';
+  }).join('');
+}
+
+function renderUserTbl(data) {
+  var d = data || users;
+  document.getElementById('userTbl').innerHTML = d.length ? d.map(function(u){
+    return '<tr>' +
+      '<td><div style="display:flex;align-items:center;gap:9px"><div style="width:28px;height:28px;border-radius:8px;background:var(--accent-l);color:var(--accent2);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;flex-shrink:0">'+u.name[0]+'</div><strong style="color:var(--text)">'+u.name+'</strong></div></td>' +
+      '<td class="mono">'+u.email+'</td>' +
+      '<td><span class="status-badge '+(u.status==='active'?'s-ok':'s-off')+'">'+(u.status==='active'?'● Aktif':'● Non-aktif')+'</span></td>' +
+      '<td class="mono">'+u.accounts+'</td>' +
+      '<td class="mono" style="font-size:.74rem">'+u.joined+'</td>' +
+      '<td><div class="act-btns"><button class="btn btn-ghost btn-sm" onclick="toggleStatus(\''+u.id+'\')">'+(u.status==='active'?'Non-aktifkan':'Aktifkan')+'</button><button class="btn btn-danger btn-sm" onclick="delUser(\''+u.id+'\')">Hapus</button></div></td>' +
+      '</tr>';
+  }).join('') : '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted)">Tidak ada data</td></tr>';
+}
+
+function renderAccTbl(data) {
+  var d = data || allAccs;
+  document.getElementById('accTbl').innerHTML = d.length ? d.map(function(a){
+    return '<tr>' +
+      '<td><strong style="color:var(--text)">'+a.name+'</strong></td>' +
+      '<td><span class="sys-badge sys-'+a.system+'">'+a.system.toUpperCase()+'</span></td>' +
+      '<td class="mono">'+a.username+'</td>' +
+      '<td style="font-size:.8rem;color:var(--muted)">'+a.owner+'</td>' +
+      '<td><span class="status-badge '+(a.totp?'s-ok':'s-off')+'">'+(a.totp?'✓ Ya':'✗ Tidak')+'</span></td>' +
+      '<td><button class="btn btn-danger btn-sm" onclick="delAcc(\''+a.id+'\')">Hapus</button></td>' +
+      '</tr>';
+  }).join('') : '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted)">Tidak ada data</td></tr>';
+}
+
+function renderFullLog() {
+  document.getElementById('fullLog').innerHTML = logs.map(function(l){
+    return '<div class="log-item"><div class="log-dot ld-'+l.type+'"></div><div><div class="log-msg">'+l.msg+'</div><div class="log-time">'+l.time+'</div></div></div>';
+  }).join('');
+}
+
+function filterUsers() {
+  var q = document.getElementById('uSearch').value.toLowerCase();
+  renderUserTbl(users.filter(function(u){ return u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q); }));
+}
+
+function filterAccounts() {
+  var q = document.getElementById('aSearch').value.toLowerCase();
+  var sys = document.getElementById('sysFilter').value;
+  renderAccTbl(allAccs.filter(function(a){
+    return (a.name.toLowerCase().includes(q) || a.username.includes(q) || a.owner.toLowerCase().includes(q)) && (sys===''||a.system===sys);
+  }));
+}
+
+function openAddUser() {
+  ['nuName','nuEmail'].forEach(function(id){ document.getElementById(id).value=''; });
+  document.getElementById('nuStatus').value='active';
+  document.getElementById('nuErr').style.display='none';
+  document.getElementById('addUserModal').classList.add('open');
+}
+
+function addUser() {
+  var name = document.getElementById('nuName').value.trim();
+  var email = document.getElementById('nuEmail').value.trim();
+  var status = document.getElementById('nuStatus').value;
+  if (!name || !email) { showErr(document.getElementById('nuErr'),'Nama dan email wajib diisi.'); return; }
+  users.unshift({ id:Date.now().toString(), name:name, email:email, status:status, accounts:0, joined:new Date().toISOString().split('T')[0] });
+  logs.unshift({ type:'green', msg:'Admin menambah pengguna baru: '+name, time:fmtTime(0) });
+  closeModal('addUserModal'); loadAll();
+  toast('success','✅ Pengguna berhasil ditambahkan.');
+}
+
+function toggleStatus(id) {
+  var u = users.find(function(x){ return x.id===id; });
+  if (!u) return;
+  u.status = u.status==='active'?'inactive':'active';
+  logs.unshift({ type:u.status==='active'?'green':'yellow', msg:'Status '+u.name+' diubah menjadi '+(u.status==='active'?'Aktif':'Non-aktif'), time:fmtTime(0) });
+  loadAll(); toast('success','Status '+u.name+' diperbarui.');
+}
+
+function delUser(id) {
+  var u = users.find(function(x){ return x.id===id; });
+  if (!u || !confirm('Hapus pengguna "'+u.name+'"?')) return;
+  users = users.filter(function(x){ return x.id!==id; });
+  logs.unshift({ type:'red', msg:'Admin menghapus pengguna: '+u.name, time:fmtTime(0) });
+  loadAll(); toast('success','🗑️ Pengguna dihapus.');
+}
+
+function delAcc(id) {
+  var a = allAccs.find(function(x){ return x.id===id; });
+  if (!a || !confirm('Hapus akun "'+a.name+'"?')) return;
+  allAccs = allAccs.filter(function(x){ return x.id!==id; });
+  logs.unshift({ type:'red', msg:'Admin menghapus akun: '+a.name, time:fmtTime(0) });
+  loadAll(); toast('success','🗑️ Akun dihapus.');
+}
+
+function clearLogs() {
+  if (!confirm('Hapus semua log?')) return;
+  logs = [{ type:'blue', msg:'Log dibersihkan oleh admin', time:fmtTime(0) }];
+  renderDashLog(); renderFullLog();
+  toast('success','Log dibersihkan.');
+}
+
+function saveConfig() {
+  var url = document.getElementById('cfgUrl').value.trim();
+  var key = document.getElementById('cfgKey').value.trim();
+  if (!url || !key) { toast('error','❌ URL dan key wajib diisi.'); return; }
+  localStorage.setItem('sb_url',url); localStorage.setItem('sb_key',key);
+  toast('success','✅ Config Supabase disimpan!');
+}
+
+function changePass() {
+  var p1 = document.getElementById('newPass').value;
+  var p2 = document.getElementById('confPass').value;
+  if (!p1||!p2) { toast('error','❌ Isi kedua field.'); return; }
+  if (p1!==p2) { toast('error','❌ Password tidak cocok.'); return; }
+  if (p1.length<8) { toast('error','❌ Password minimal 8 karakter.'); return; }
+  ADMIN.password = p1;
+  document.getElementById('newPass').value=''; document.getElementById('confPass').value='';
+  toast('success','✅ Password admin diperbarui!');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function showErr(el, msg) { el.textContent=msg; el.style.display='block'; }
+function toast(type, msg) {
+  var c = document.getElementById('toastBox');
+  var t = document.createElement('div');
+  t.className='toast '+type; t.innerHTML='<span>'+msg+'</span>';
+  c.appendChild(t);
+  setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(function(){ t.remove(); },300); }, 3000);
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key==='Enter' && document.getElementById('loginScreen').classList.contains('active')) handleLogin();
+  if (e.key==='Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(function(m){ m.classList.remove('open'); });
+    closeSidebar();
+  }
+});
+</script>
+</body>
+</html>
